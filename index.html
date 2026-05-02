@@ -23,7 +23,7 @@
     --c-danger: #e53e3e;
     --c-success: #2e7d32;
     --c-text: #1a202c;
-    --c-muted: #718096;
+    --c-muted: #4a5568;  /* WCAG AA 7.0:1 */
     --c-border: #cbd5e0;
     --c-white: #ffffff;
   }
@@ -219,6 +219,11 @@
     color: var(--c-danger);
     border: 1px solid #fed7d7;
     font-size: 0.9rem;
+  }
+  .form-banner.is-info {
+    background: #f0f7ff;
+    color: var(--c-sub);
+    border-color: #bee3f8;
   }
 
   /* Results */
@@ -881,6 +886,16 @@
 
       var bar = document.createElement('div');
       bar.className = 'container-bar';
+      bar.setAttribute('role', 'progressbar');
+      bar.setAttribute('aria-valuemin', '0');
+      bar.setAttribute('aria-valuemax', '100');
+      if (cantLoad) {
+        bar.setAttribute('aria-valuenow', '0');
+        bar.setAttribute('aria-label', c.name + ' 컨테이너 적재 불가');
+      } else {
+        bar.setAttribute('aria-valuenow', String(Math.round(pct * 100)));
+        bar.setAttribute('aria-label', c.name + ' 컨테이너 적재율 ' + Math.round(ratio * 100) + '%');
+      }
       var fill = document.createElement('div');
       fill.className = 'container-fill';
       if (cantLoad) {
@@ -932,6 +947,13 @@
 
     if (validRows.length === 0 || anyError) {
       hideResults();
+      if (allEmpty) {
+        formBanner.classList.add('is-info');
+        formBanner.textContent = '값을 입력하면 결과가 자동 계산됩니다';
+      } else {
+        formBanner.classList.remove('is-info');
+        formBanner.textContent = '입력값을 확인하세요';
+      }
       formBanner.hidden = false;
       lastResult = null;
       return;
@@ -1115,6 +1137,11 @@
   });
   copyUrlBtn.addEventListener('click', function () {
     var url = buildShareUrl();
+    var hasInput = url.indexOf('?rows=') !== -1;
+    if (!hasInput) {
+      showToast('입력값이 없습니다');
+      return;
+    }
     Promise.resolve(copyToClipboard(url)).then(function (ok) {
       showToast(ok ? 'URL을 복사했습니다' : '복사에 실패했습니다');
     });
