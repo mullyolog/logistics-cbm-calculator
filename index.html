@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CBM 계산기 - 컨테이너 적재량·R/T·C/W 자동 계산 | 정지상</title>
+<meta name="description" content="물류·무역 실무자용 무료 CBM 계산기. 1박스·총 CBM, 20ft·40ft·40HC 컨테이너 적재량, R/T(해상)·C/W(항공) 자동 계산. 광고·회원가입 없음.">
+<meta property="og:title" content="CBM 계산기 - 컨테이너 적재량·R/T·C/W 자동 계산 | 정지상">
+<meta property="og:description" content="물류·무역 실무자용 무료 CBM 계산기. 1박스·총 CBM, 20ft·40ft·40HC 컨테이너 적재량, R/T(해상)·C/W(항공) 자동 계산. 광고·회원가입 없음.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --c-main: #1a365d;
+    --c-sub: #234e7e;
+    --c-accent: #e2a84b;
+    --c-bg: #f7fafc;
+    --c-danger: #e53e3e;
+    --c-success: #2e7d32;
+    --c-text: #1a202c;
+    --c-muted: #718096;
+    --c-border: #cbd5e0;
+    --c-white: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.55;
+    font-size: 16px;
+  }
+
+  body {
+    padding: 12px;
+  }
+
+  .wrap {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  header.site-header {
+    background: var(--c-main);
+    color: var(--c-white);
+    padding: 20px 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  header.site-header h1 {
+    margin: 0 0 6px;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  header.site-header .tagline {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    opacity: 0.92;
+  }
+  .author-badge {
+    margin: 0;
+    font-size: 0.78rem;
+    background: var(--c-sub);
+    padding: 8px 12px;
+    border-radius: 8px;
+    line-height: 1.4;
+  }
+
+  /* Ad slots */
+  .ad-slot {
+    border: 1px dashed #b0b8c4;
+    color: var(--c-muted);
+    background: #edf2f7;
+    text-align: center;
+    padding: 18px 12px;
+    margin: 16px 0;
+    border-radius: 8px;
+    font-size: 0.82rem;
+  }
+
+  /* Card */
+  .card {
+    background: var(--c-white);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .card h2 {
+    margin: 0 0 12px;
+    font-size: 1.1rem;
+    color: var(--c-main);
+  }
+
+  /* Form */
+  .row {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #fbfcfe;
+  }
+  .row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .row-head .row-title {
+    font-weight: 600;
+    color: var(--c-main);
+    font-size: 0.95rem;
+  }
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+  }
+  .field label {
+    font-size: 0.82rem;
+    color: var(--c-muted);
+    margin-bottom: 4px;
+  }
+  .field input {
+    height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: var(--c-white);
+    color: var(--c-text);
+    width: 100%;
+    font-family: inherit;
+  }
+  .field input:focus {
+    outline: 2px solid var(--c-sub);
+    outline-offset: -1px;
+    border-color: var(--c-sub);
+  }
+  .field.has-error input {
+    border-color: var(--c-danger);
+  }
+  .field .err {
+    color: var(--c-danger);
+    font-size: 0.78rem;
+    margin-top: 4px;
+    min-height: 1em;
+  }
+
+  /* Buttons */
+  .btn {
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    background: var(--c-white);
+    color: var(--c-main);
+    border-color: var(--c-border);
+    transition: background 0.15s;
+  }
+  .btn:hover { background: #edf2f7; }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--c-main);
+    color: var(--c-white);
+    border-color: var(--c-main);
+  }
+  .btn-primary:hover { background: var(--c-sub); }
+  .btn-accent {
+    background: var(--c-accent);
+    color: #2b2b2b;
+    border-color: var(--c-accent);
+  }
+  .btn-accent:hover { filter: brightness(0.95); }
+  .btn-danger-outline {
+    color: var(--c-danger);
+    border-color: var(--c-danger);
+    background: var(--c-white);
+  }
+  .btn-danger-outline:hover { background: #fff5f5; }
+  .btn-sm {
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .btn-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  /* Status banner */
+  .form-banner {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fff5f5;
+    color: var(--c-danger);
+    border: 1px solid #fed7d7;
+    font-size: 0.9rem;
+  }
+
+  /* Results */
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .result-item {
+    background: var(--c-bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--c-accent);
+  }
+  .result-item .label {
+    font-size: 0.85rem;
+    color: var(--c-muted);
+  }
+  .result-item .value {
+    font-weight: 700;
+    color: var(--c-main);
+    font-size: 1.05rem;
+  }
+
+  .alert-warn {
+    background: #fffaf0;
+    border: 1px solid var(--c-accent);
+    color: #8c5a18;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 0 0 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  /* Container visualization */
+  .containers {
+    margin-top: 8px;
+  }
+  .container-row {
+    margin-bottom: 12px;
+  }
+  .container-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .container-name {
+    font-weight: 600;
+    color: var(--c-main);
+  }
+  .container-info {
+    color: var(--c-muted);
+    font-size: 0.85rem;
+  }
+  .container-bar {
+    height: 14px;
+    background: #e2e8f0;
+    border-radius: 7px;
+    overflow: hidden;
+    position: relative;
+  }
+  .container-fill {
+    height: 100%;
+    background: var(--c-success);
+    border-radius: 7px;
+    transition: width 0.25s ease;
+  }
+  .container-fill.overload {
+    background: var(--c-danger);
+  }
+  .container-fill.cantload {
+    background: #cbd5e0;
+    width: 100% !important;
+  }
+  .container-flag {
+    color: var(--c-danger);
+    font-weight: 700;
+    font-size: 0.82rem;
+  }
+  .container-flag.ok {
+    color: var(--c-success);
+  }
+
+  /* Details / 계산 방법 */
+  details.method {
+    background: var(--c-white);
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+  details.method summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--c-main);
+    list-style: none;
+    padding: 4px 0;
+  }
+  details.method summary::-webkit-details-marker { display: none; }
+  details.method[open] summary { margin-bottom: 8px; }
+  details.method dl { margin: 0; }
+  details.method dt {
+    font-weight: 700;
+    color: var(--c-sub);
+    margin-top: 8px;
+    font-size: 0.92rem;
+  }
+  details.method dd {
+    margin: 4px 0 0;
+    padding-left: 0;
+    font-size: 0.9rem;
+    color: var(--c-text);
+  }
+
+  /* Upcoming tools */
+  .upcoming-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .upcoming-list li {
+    padding: 10px 12px;
+    border: 1px dashed var(--c-border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    color: var(--c-muted);
+    background: #fbfcfe;
+    font-size: 0.92rem;
+  }
+
+  /* CTA */
+  .cta {
+    text-align: center;
+    padding: 18px 16px;
+    background: var(--c-main);
+    border-radius: 12px;
+    margin: 16px 0;
+  }
+  .cta a {
+    display: inline-block;
+    background: var(--c-accent);
+    color: #2b2b2b;
+    text-decoration: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 700;
+    min-height: 44px;
+    line-height: 1.2;
+  }
+  .cta a:hover { filter: brightness(0.95); }
+  .cta p {
+    color: var(--c-white);
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+  }
+
+  /* Footer */
+  footer.site-footer {
+    text-align: center;
+    color: var(--c-muted);
+    font-size: 0.82rem;
+    padding: 16px 8px 8px;
+  }
+  footer.site-footer p { margin: 4px 0; }
+  footer.site-footer .disclaimer {
+    background: var(--c-white);
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    color: var(--c-muted);
+    line-height: 1.5;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 32px;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--c-main);
+    color: var(--c-white);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 100;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Hidden util */
+  [hidden] { display: none !important; }
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    body { padding: 24px; }
+    header.site-header { padding: 28px; }
+    header.site-header h1 { font-size: 1.7rem; }
+    .card { padding: 22px; }
+    .field-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .result-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site-header">
+    <h1>CBM 계산기</h1>
+    <p class="tagline">화물 크기·수량 입력 → CBM, 컨테이너 적재량, R/T(해상)·C/W(항공) 자동 계산</p>
+    <p class="author-badge">정지상 | 인하대학교 아태물류학부 | 물류관리사·국제무역사·보세사·원산지관리사·유통관리사 2급</p>
+  </header>
+
+  <div class="ad-slot" aria-hidden="true">광고 영역 (준비 중)</div>
+
+  <main>
+
+    <section class="card" aria-labelledby="input-heading">
+      <h2 id="input-heading">박스 정보 입력</h2>
+      <div id="rows-container"></div>
+
+      <div class="btn-bar">
+        <button type="button" class="btn btn-primary" id="add-row">＋ 행 추가</button>
+        <button type="button" class="btn btn-danger-outline" id="reset-btn">초기화</button>
+      </div>
+
+      <p class="form-banner" id="form-banner" hidden>입력값을 확인하세요</p>
+    </section>
+
+    <section class="card" id="results" aria-labelledby="result-heading" hidden>
+      <h2 id="result-heading">계산 결과</h2>
+
+      <div class="alert-warn" id="big-box-warn" hidden></div>
+
+      <div class="result-grid" id="result-grid"></div>
+
+      <div class="containers" id="containers"></div>
+
+      <div class="btn-bar">
+        <button type="button" class="btn btn-accent" id="copy-result">📋 결과 복사</button>
+        <button type="button" class="btn" id="copy-url">🔗 URL 복사</button>
+      </div>
+    </section>
+
+    <details class="method">
+      <summary>▼ 계산 방법 보기</summary>
+      <dl>
+        <dt>CBM 공식</dt>
+        <dd>(가로 × 세로 × 높이) ÷ 1,000,000</dd>
+        <dt>R/T 공식 (해상 운임)</dt>
+        <dd>해상 운임은 부피(CBM)와 중량(톤) 중 큰 값으로 계산. R/T = max(총 CBM, 총 중량 톤)</dd>
+        <dt>C/W 공식 (항공 운임)</dt>
+        <dd>항공 운임은 부피와 중량 중 큰 값. 부피 환산 비율 167 적용. C/W = max(총 중량 kg, 총 CBM × 167)</dd>
+        <dt>컨테이너 기준</dt>
+        <dd>20ft 28 CBM / 40ft 58 CBM / 40HC 68 CBM (실용 적재량 기준, 화물 특성에 따라 차이)</dd>
+      </dl>
+    </details>
+
+    <section class="card" aria-labelledby="upcoming-heading">
+      <h2 id="upcoming-heading">곧 추가될 도구</h2>
+      <ul class="upcoming-list">
+        <li>🚧 관세 계산기 (제작 중)</li>
+        <li>🚧 HS코드 검색기 (제작 중)</li>
+        <li>🚧 인코텀즈 가이드 (제작 중)</li>
+      </ul>
+    </section>
+
+    <section class="cta" aria-label="문의">
+      <p>현장에서 쓰는 맞춤 물류 도구가 필요하신가요?</p>
+      <a href="mailto:[YOUR_EMAIL]">맞춤 물류 도구 제작 문의</a>
+    </section>
+
+    <div class="ad-slot" aria-hidden="true">광고 영역 (준비 중)</div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p class="disclaimer">본 도구는 참고용이며, 화물 특성·포장 상태·이단 적재 가능 여부에 따라 실제 적재량과 차이 날 수 있습니다.</p>
+    <p>© 2026 정지상 | 인하대학교 아태물류학부</p>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ============================================
+  // Constants
+  // ============================================
+  var CONTAINERS = [
+    { key: '20ft', name: '20ft', cbm: 28 },
+    { key: '40ft', name: '40ft', cbm: 58 },
+    { key: '40hc', name: '40HC', cbm: 68 }
+  ];
+  var AIR_RATIO = 167;
+  var FIELD_DEFS = [
+    { key: 'width',  label: '가로 (cm)',  name: '가로', placeholder: '예: 50',  inputmode: 'decimal', required: true,  integer: false },
+    { key: 'depth',  label: '세로 (cm)',  name: '세로', placeholder: '예: 40',  inputmode: 'decimal', required: true,  integer: false },
+    { key: 'height', label: '높이 (cm)',  name: '높이', placeholder: '예: 30',  inputmode: 'decimal', required: true,  integer: false },
+    { key: 'count',  label: '수량 (개)',  name: '수량', placeholder: '예: 100', inputmode: 'numeric', required: true,  integer: true  },
+    { key: 'weight', label: '무게 (kg, 선택)', name: '무게', placeholder: '예: 15', inputmode: 'decimal', required: false, integer: false }
+  ];
+
+  // ============================================
+  // DOM refs
+  // ============================================
+  var rowsContainer  = document.getElementById('rows-container');
+  var addRowBtn      = document.getElementById('add-row');
+  var resetBtn       = document.getElementById('reset-btn');
+  var formBanner     = document.getElementById('form-banner');
+  var resultsSection = document.getElementById('results');
+  var bigBoxWarn     = document.getElementById('big-box-warn');
+  var resultGrid     = document.getElementById('result-grid');
+  var containersEl   = document.getElementById('containers');
+  var copyResultBtn  = document.getElementById('copy-result');
+  var copyUrlBtn     = document.getElementById('copy-url');
+  var toastEl        = document.getElementById('toast');
+
+  var rowSeq = 0;
+  var lastResult = null;
+
+  // ============================================
+  // Row creation / management
+  // ============================================
+  function createRow(initial) {
+    rowSeq += 1;
+    var rowId = 'row-' + rowSeq;
+
+    var row = document.createElement('div');
+    row.className = 'row';
+    row.dataset.rowId = rowId;
+
+    var head = document.createElement('div');
+    head.className = 'row-head';
+
+    var title = document.createElement('span');
+    title.className = 'row-title';
+    title.textContent = '박스 #' + rowsContainer.children.length + 1;
+    head.appendChild(title);
+
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn btn-sm btn-danger-outline remove-row';
+    removeBtn.textContent = '삭제';
+    removeBtn.addEventListener('click', function () {
+      row.parentNode.removeChild(row);
+      renumberRows();
+      updateRemoveVisibility();
+      compute();
+    });
+    head.appendChild(removeBtn);
+
+    row.appendChild(head);
+
+    var grid = document.createElement('div');
+    grid.className = 'field-grid';
+
+    FIELD_DEFS.forEach(function (def) {
+      var f = document.createElement('div');
+      f.className = 'field';
+      f.dataset.field = def.key;
+
+      var lab = document.createElement('label');
+      var inputId = rowId + '-' + def.key;
+      lab.setAttribute('for', inputId);
+      lab.textContent = def.label;
+
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.id = inputId;
+      input.dataset.field = def.key;
+      input.placeholder = def.placeholder;
+      input.setAttribute('inputmode', def.inputmode);
+      input.autocomplete = 'off';
+      if (initial && initial[def.key] !== undefined && initial[def.key] !== null) {
+        input.value = String(initial[def.key]);
+      }
+      input.addEventListener('input', compute);
+
+      var err = document.createElement('div');
+      err.className = 'err';
+
+      f.appendChild(lab);
+      f.appendChild(input);
+      f.appendChild(err);
+      grid.appendChild(f);
+    });
+
+    row.appendChild(grid);
+    rowsContainer.appendChild(row);
+    renumberRows();
+    updateRemoveVisibility();
+    return row;
+  }
+
+  function renumberRows() {
+    var rows = rowsContainer.querySelectorAll('.row');
+    for (var i = 0; i < rows.length; i++) {
+      var t = rows[i].querySelector('.row-title');
+      if (t) t.textContent = '박스 #' + (i + 1);
+    }
+  }
+
+  function updateRemoveVisibility() {
+    var rows = rowsContainer.querySelectorAll('.row');
+    var multi = rows.length > 1;
+    rows.forEach(function (r) {
+      var btn = r.querySelector('.remove-row');
+      if (btn) btn.hidden = !multi;
+    });
+  }
+
+  // ============================================
+  // Validation
+  // ============================================
+  var NUMBER_RE = /^-?\d*\.?\d+$/;
+
+  function validateRow(row) {
+    var values = {};
+    var errors = {};
+    var nonEmptyCount = 0;
+    var requiredFilled = 0;
+    var requiredCount = 0;
+
+    FIELD_DEFS.forEach(function (def) {
+      if (def.required) requiredCount++;
+      var input = row.querySelector('input[data-field="' + def.key + '"]');
+      var raw = input ? input.value.trim() : '';
+
+      if (raw !== '') nonEmptyCount++;
+
+      if (raw === '') {
+        if (def.required) {
+          errors[def.key] = def.name + ' 값을 입력하세요';
+        } else {
+          values[def.key] = 0;
+        }
+        return;
+      }
+
+      if (!NUMBER_RE.test(raw)) {
+        errors[def.key] = '숫자만 입력하세요';
+        return;
+      }
+
+      var num = parseFloat(raw);
+      if (isNaN(num)) {
+        errors[def.key] = '숫자만 입력하세요';
+        return;
+      }
+      if (num < 0) {
+        errors[def.key] = '양수를 입력하세요';
+        return;
+      }
+      if (def.required && num === 0) {
+        errors[def.key] = def.name + ' 값을 입력하세요';
+        return;
+      }
+
+      values[def.key] = num;
+      if (def.required) requiredFilled++;
+    });
+
+    return {
+      values: values,
+      errors: errors,
+      isEmpty: nonEmptyCount === 0,
+      isValid: Object.keys(errors).length === 0 && requiredFilled === requiredCount
+    };
+  }
+
+  function applyRowErrors(row, errors) {
+    FIELD_DEFS.forEach(function (def) {
+      var fieldEl = row.querySelector('.field[data-field="' + def.key + '"]');
+      if (!fieldEl) return;
+      var errEl = fieldEl.querySelector('.err');
+      if (errors[def.key]) {
+        fieldEl.classList.add('has-error');
+        if (errEl) errEl.textContent = errors[def.key];
+      } else {
+        fieldEl.classList.remove('has-error');
+        if (errEl) errEl.textContent = '';
+      }
+    });
+  }
+
+  // ============================================
+  // Calculation
+  // ============================================
+  function calcSingleCBM(w, d, h) {
+    return (w * d * h) / 1000000;
+  }
+
+  function aggregate(rowResults) {
+    var totalCBM = 0;
+    var totalWeightKg = 0;
+    var maxSingleCBM = 0;
+    var anyWeight = false;
+
+    rowResults.forEach(function (rr) {
+      var single = calcSingleCBM(rr.values.width, rr.values.depth, rr.values.height);
+      var rowTotal = single * rr.values.count;
+      totalCBM += rowTotal;
+      if (single > maxSingleCBM) maxSingleCBM = single;
+      var w = rr.values.weight || 0;
+      if (w > 0) {
+        anyWeight = true;
+        totalWeightKg += w * rr.values.count;
+      }
+    });
+
+    var totalWeightTon = totalWeightKg / 1000;
+    var rt = anyWeight ? Math.max(totalCBM, totalWeightTon) : null;
+    var cw = anyWeight ? Math.max(totalWeightKg, totalCBM * AIR_RATIO) : null;
+
+    return {
+      totalCBM: totalCBM,
+      maxSingleCBM: maxSingleCBM,
+      totalWeightKg: totalWeightKg,
+      totalWeightTon: totalWeightTon,
+      anyWeight: anyWeight,
+      rt: rt,
+      cw: cw
+    };
+  }
+
+  // ============================================
+  // Formatting
+  // ============================================
+  function fmtCBM(v) {
+    if (!isFinite(v)) return '-';
+    if (v === 0) return '0.00';
+    if (v > 0 && v < 0.01) return v.toFixed(3);
+    return v.toFixed(2);
+  }
+  function fmtKg(v) {
+    if (!isFinite(v)) return '-';
+    return Math.round(v * 100) / 100 + ' kg';
+  }
+  function fmtTon(v) {
+    if (!isFinite(v)) return '-';
+    return v.toFixed(3) + ' 톤';
+  }
+  function fmtPercent(v) {
+    return Math.round(v * 100) + '%';
+  }
+
+  // ============================================
+  // Rendering
+  // ============================================
+  function renderResults(rowResults, agg) {
+    // Big-box warning (any single box > 28 CBM = can't fit in 20ft)
+    if (agg.maxSingleCBM > 28) {
+      bigBoxWarn.hidden = false;
+      bigBoxWarn.textContent = '⚠️ 20ft 적재 불가 (1박스 > 28CBM)';
+    } else {
+      bigBoxWarn.hidden = true;
+      bigBoxWarn.textContent = '';
+    }
+
+    // Result grid
+    var items = [];
+    if (rowResults.length === 1) {
+      var rr = rowResults[0];
+      items.push({
+        label: '1박스 CBM',
+        value: fmtCBM(calcSingleCBM(rr.values.width, rr.values.depth, rr.values.height))
+      });
+    } else {
+      items.push({
+        label: '최대 1박스 CBM',
+        value: fmtCBM(agg.maxSingleCBM)
+      });
+    }
+    items.push({ label: '총 CBM', value: fmtCBM(agg.totalCBM) });
+
+    if (agg.anyWeight) {
+      items.push({ label: '총 중량 (kg)', value: fmtKg(agg.totalWeightKg) });
+      items.push({ label: '총 중량 (톤)', value: fmtTon(agg.totalWeightTon) });
+      items.push({ label: '해상 R/T', value: fmtCBM(agg.rt) });
+      items.push({ label: '항공 C/W', value: fmtKg(agg.cw) });
+    }
+
+    resultGrid.innerHTML = '';
+    items.forEach(function (it) {
+      var d = document.createElement('div');
+      d.className = 'result-item';
+      var l = document.createElement('span');
+      l.className = 'label';
+      l.textContent = it.label;
+      var v = document.createElement('span');
+      v.className = 'value';
+      v.textContent = it.value;
+      d.appendChild(l);
+      d.appendChild(v);
+      resultGrid.appendChild(d);
+    });
+
+    // Container visualization
+    containersEl.innerHTML = '';
+    CONTAINERS.forEach(function (c) {
+      var ratio = agg.totalCBM / c.cbm;
+      var pct = Math.min(ratio, 1);
+      var containers = Math.ceil(agg.totalCBM / c.cbm);
+      var overload = ratio > 1;
+      var cantLoad = agg.maxSingleCBM > c.cbm;
+      var maxBoxes = (agg.maxSingleCBM > 0 && !cantLoad) ? Math.floor(c.cbm / agg.maxSingleCBM) : 0;
+
+      var row = document.createElement('div');
+      row.className = 'container-row';
+
+      var head = document.createElement('div');
+      head.className = 'container-head';
+
+      var name = document.createElement('span');
+      name.className = 'container-name';
+      name.textContent = c.name + ' 컨테이너';
+      head.appendChild(name);
+
+      var info = document.createElement('span');
+      info.className = 'container-info';
+      if (cantLoad) {
+        info.innerHTML = '<span class="container-flag">적재 불가</span>';
+      } else {
+        var pctText = fmtPercent(ratio);
+        info.textContent = pctText + ' · 필요 ' + containers + '대 · 최대 ' + maxBoxes + '개/대';
+        if (overload) {
+          var flag = document.createElement('span');
+          flag.className = 'container-flag';
+          flag.textContent = ' 다중 컨테이너 필요';
+          info.appendChild(flag);
+        }
+      }
+      head.appendChild(info);
+
+      row.appendChild(head);
+
+      var bar = document.createElement('div');
+      bar.className = 'container-bar';
+      var fill = document.createElement('div');
+      fill.className = 'container-fill';
+      if (cantLoad) {
+        fill.classList.add('cantload');
+      } else {
+        fill.style.width = (pct * 100) + '%';
+        if (overload) fill.classList.add('overload');
+      }
+      bar.appendChild(fill);
+      row.appendChild(bar);
+
+      containersEl.appendChild(row);
+    });
+
+    resultsSection.hidden = false;
+  }
+
+  function hideResults() {
+    resultsSection.hidden = true;
+    bigBoxWarn.hidden = true;
+    bigBoxWarn.textContent = '';
+    resultGrid.innerHTML = '';
+    containersEl.innerHTML = '';
+  }
+
+  // ============================================
+  // Compute orchestration
+  // ============================================
+  function compute() {
+    var rows = Array.prototype.slice.call(rowsContainer.querySelectorAll('.row'));
+    var validRows = [];
+    var anyError = false;
+    var allEmpty = true;
+
+    rows.forEach(function (row) {
+      var v = validateRow(row);
+      if (!v.isEmpty) allEmpty = false;
+      if (v.isEmpty) {
+        applyRowErrors(row, {});
+        return;
+      }
+      applyRowErrors(row, v.errors);
+      if (v.isValid) {
+        validRows.push(v);
+      } else {
+        anyError = true;
+      }
+    });
+
+    if (validRows.length === 0 || anyError) {
+      hideResults();
+      formBanner.hidden = false;
+      lastResult = null;
+      return;
+    }
+
+    formBanner.hidden = true;
+    var agg = aggregate(validRows);
+    renderResults(validRows, agg);
+    lastResult = { rows: validRows, agg: agg };
+  }
+
+  // ============================================
+  // Reset
+  // ============================================
+  function resetAll() {
+    rowsContainer.innerHTML = '';
+    createRow();
+    formBanner.hidden = true;
+    hideResults();
+    lastResult = null;
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }
+
+  // ============================================
+  // Copy helpers
+  // ============================================
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 1800);
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(
+        function () { return true; },
+        function () { return fallbackCopy(text); }
+      );
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function buildResultText() {
+    if (!lastResult) return '';
+    var agg = lastResult.agg;
+    var lines = [];
+    lines.push('CBM 계산 결과');
+    lines.push('총 CBM: ' + fmtCBM(agg.totalCBM));
+    if (lastResult.rows.length === 1) {
+      var rr = lastResult.rows[0];
+      lines.push('1박스 CBM: ' + fmtCBM(calcSingleCBM(rr.values.width, rr.values.depth, rr.values.height)));
+    } else {
+      lines.push('최대 1박스 CBM: ' + fmtCBM(agg.maxSingleCBM));
+    }
+    if (agg.anyWeight) {
+      lines.push('총 중량: ' + fmtKg(agg.totalWeightKg) + ' (' + fmtTon(agg.totalWeightTon) + ')');
+      lines.push('해상 R/T: ' + fmtCBM(agg.rt));
+      lines.push('항공 C/W: ' + fmtKg(agg.cw));
+    }
+    CONTAINERS.forEach(function (c) {
+      var cantLoad = agg.maxSingleCBM > c.cbm;
+      if (cantLoad) {
+        lines.push(c.name + ' 컨테이너: 적재 불가');
+      } else {
+        var ratio = agg.totalCBM / c.cbm;
+        var containers = Math.ceil(agg.totalCBM / c.cbm);
+        var maxBoxes = Math.floor(c.cbm / agg.maxSingleCBM);
+        lines.push(c.name + ' 컨테이너: ' + fmtPercent(ratio) + ' · 필요 ' + containers + '대 · 최대 ' + maxBoxes + '개/대');
+      }
+    });
+    if (agg.maxSingleCBM > 28) {
+      lines.push('⚠️ 20ft 적재 불가 (1박스 > 28CBM)');
+    }
+    lines.push('— CBM 계산기 (정지상)');
+    return lines.join('\n');
+  }
+
+  function buildShareUrl() {
+    var rows = Array.prototype.slice.call(rowsContainer.querySelectorAll('.row'));
+    var parts = [];
+    rows.forEach(function (row) {
+      var inputs = {};
+      FIELD_DEFS.forEach(function (def) {
+        var inp = row.querySelector('input[data-field="' + def.key + '"]');
+        inputs[def.key] = inp ? inp.value.trim() : '';
+      });
+      var hasAny = false;
+      FIELD_DEFS.forEach(function (d) { if (inputs[d.key] !== '') hasAny = true; });
+      if (!hasAny) return;
+      parts.push([
+        inputs.width || '',
+        inputs.depth || '',
+        inputs.height || '',
+        inputs.count || '',
+        inputs.weight || '0'
+      ].join(','));
+    });
+    var base = window.location.origin + window.location.pathname;
+    if (parts.length === 0) return base;
+    return base + '?rows=' + encodeURIComponent(parts.join(';'));
+  }
+
+  // ============================================
+  // URL load
+  // ============================================
+  function loadFromUrl() {
+    var search = window.location.search || '';
+    if (search.charAt(0) === '?') search = search.substring(1);
+    if (!search) return false;
+
+    var pairs = search.split('&');
+    var rowsParam = '';
+    for (var i = 0; i < pairs.length; i++) {
+      var kv = pairs[i].split('=');
+      if (kv[0] === 'rows') {
+        rowsParam = decodeURIComponent(kv[1] || '');
+        break;
+      }
+    }
+    if (!rowsParam) return false;
+
+    var groups = rowsParam.split(';');
+    var added = 0;
+    rowsContainer.innerHTML = '';
+    groups.forEach(function (g) {
+      var s = g.trim();
+      if (!s) return;
+      var parts = s.split(',');
+      var data = {
+        width:  parts[0] || '',
+        depth:  parts[1] || '',
+        height: parts[2] || '',
+        count:  parts[3] || '',
+        weight: (parts[4] && parts[4] !== '0') ? parts[4] : ''
+      };
+      createRow(data);
+      added++;
+    });
+    if (added === 0) {
+      createRow();
+      return false;
+    }
+    return true;
+  }
+
+  // ============================================
+  // Init
+  // ============================================
+  addRowBtn.addEventListener('click', function () {
+    createRow();
+    compute();
+  });
+  resetBtn.addEventListener('click', resetAll);
+  copyResultBtn.addEventListener('click', function () {
+    if (!lastResult) {
+      showToast('계산 결과가 없습니다');
+      return;
+    }
+    var text = buildResultText();
+    Promise.resolve(copyToClipboard(text)).then(function (ok) {
+      showToast(ok ? '결과를 복사했습니다' : '복사에 실패했습니다');
+    });
+  });
+  copyUrlBtn.addEventListener('click', function () {
+    var url = buildShareUrl();
+    Promise.resolve(copyToClipboard(url)).then(function (ok) {
+      showToast(ok ? 'URL을 복사했습니다' : '복사에 실패했습니다');
+    });
+  });
+
+  if (!loadFromUrl()) {
+    createRow();
+  }
+  compute();
+})();
+</script>
+</body>
+</html>
