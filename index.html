@@ -127,6 +127,9 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
+  .field-grid .field:last-child {
+    grid-column: 1 / -1;
+  }
   .field {
     display: flex;
     flex-direction: column;
@@ -198,8 +201,8 @@
   }
   .btn-danger-outline:hover { background: #fff5f5; }
   .btn-sm {
-    min-height: 36px;
-    padding: 6px 12px;
+    min-height: 44px;
+    padding: 8px 14px;
     font-size: 0.85rem;
   }
 
@@ -441,6 +444,9 @@
     .card { padding: 22px; }
     .field-grid {
       grid-template-columns: repeat(5, 1fr);
+    }
+    .field-grid .field:last-child {
+      grid-column: auto;
     }
     .result-grid {
       grid-template-columns: repeat(2, 1fr);
